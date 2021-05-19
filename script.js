@@ -31,21 +31,39 @@ class GoodsList {
     });
     document.querySelector('.goods-list').innerHTML = listHtml;
   }
+
+  getTotalSumm() {
+    const totalSum = this.goods.reduce((acc, item) => acc + item.price, 0);
+    console.log(totalSum);
+  }
 }
 
 const list = new GoodsList;
 list.fetchGoods();
+list.getTotalSumm();
 list.render();
 
+class Basket extends GoodsList {
+  constructor(...args) {
+    super(...args);
+  }
+  clearAll() {
 
+  }
 
-// const renderGoodsItem = (title = 'Title', price = 0, img = '') => {
-//   return `<div class="goods-item"><img src="${img}"><h3>${title}</h3><p>${price}</p></div>`;
-// };
+  addItem() { }
 
-// const renderGoodsList = (list = []) => {
-//   let goodsList = list.map(item => renderGoodsItem(item.title, item.price));
-//   document.querySelector('.goods-list').innerHTML = goodsList.join('');
-// }
+  removeItem() { }
 
-// renderGoodsList(goods);
+}
+
+class BasketItem extends GoodsItem {
+  constructor(...args) {
+    super(...args);
+    this.count = 0;
+  }
+
+  addOne() { }
+
+  removeOne() { }
+}
