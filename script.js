@@ -173,3 +173,6 @@ searchInput.addEventListener('keydown', (e) => {
   const value = searchInput.value;
   list.filterGoods(value);
 });
+
+// дз 4
+// /\B'|'\B/g
