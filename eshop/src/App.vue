@@ -1,9 +1,13 @@
 <template>
   <div id="app">
     <header>
-      <input type="text" class="goods-search" />
-      <button class="search-button" type="button">Искать</button>
-      <button class="cart-button" type="button">Корзина</button>
+      <input v-model="searhLine" type="text" class="goods-search" />
+      <button class="search-button" type="button" @click="filterGoods">
+        Искать
+      </button>
+      <button class="cart-button" type="button" @click="toggleCartStatus">
+        Корзина
+      </button>
     </header>
     <main>
       Элитные товары:
@@ -20,7 +24,9 @@
       </div>
       <br />
       Корзина:
-      <div class="cart-list"></div>
+      <div v-show="isVisibleCart" class="cart">
+        <div class="cart-list"></div>
+      </div>
     </main>
   </div>
 </template>
@@ -32,6 +38,8 @@ export default {
   data: () => ({
     goods: [],
     filteredGoods: [],
+    searhLine: "",
+    isVisibleCart: false,
   }),
   mounted() {
     this.makeGETRequest(`${API_URL}/catalogData.json`);
@@ -44,6 +52,20 @@ export default {
           this.goods = data;
           this.filteredGoods = data;
         });
+    },
+    filterGoods() {
+      const regexp = new RegExp(this.searhLine, "i");
+      this.filteredGoods = this.goods.filter((good) =>
+        regexp.test(good.product_name)
+      );
+    },
+    toggleCartStatus() {
+      this.isVisibleCart = !this.isVisibleCart;
+    },
+  },
+  watch: {
+    searhLine() {
+      this.filterGoods();
     },
   },
 };
