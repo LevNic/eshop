@@ -10,7 +10,8 @@
       </button>
     </header>
     <main>
-      Элитные товары:
+      <GoodsList :goods="filteredGoods" />
+      <!-- Элитные товары:
       <div class="goods-list">
         <div
           v-for="item in filteredGoods"
@@ -21,10 +22,10 @@
           <p>{{ item.price }}</p>
           <button>Добавить</button>
         </div>
-      </div>
+      </div> -->
       <br />
-      Корзина:
       <div v-show="isVisibleCart" class="cart">
+        Корзина:
         <div class="cart-list"></div>
       </div>
     </main>
@@ -32,9 +33,13 @@
 </template>
 
 <script>
+import GoodsList from "./components/GoodsList";
 const API_URL =
   "https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses";
 export default {
+  components: {
+    GoodsList,
+  },
   data: () => ({
     goods: [],
     filteredGoods: [],
@@ -101,20 +106,19 @@ main {
   color: white;
   background-color: black;
 }
-.cart-list,
-.goods-list {
+.cart-list {
   display: flex;
   flex-flow: row;
   flex-wrap: wrap;
   justify-content: space-around;
 }
-.goods-item {
+/* .goods-item {
   width: 200px;
   height: 300px;
   padding: 5px;
   margin: 10px;
   box-shadow: 0px 0px 8px 2px rgba(34, 60, 80, 0.2);
-}
+} */
 .goods-search,
 .search-button {
   height: 100%;
