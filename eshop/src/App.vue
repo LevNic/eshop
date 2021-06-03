@@ -1,35 +1,10 @@
 <template>
   <div id="app">
     <Header @toggle-cart="toggleCartStatus" @filter-goods="filterGoods" />
-    <!-- <header>
-      <input v-model="searhLine" type="text" class="goods-search" />
-      <button class="search-button" type="button" @click="filterGoods">
-        Искать
-      </button>
-      <button class="cart-button" type="button" @click="toggleCartStatus">
-        Корзина
-      </button>
-    </header> -->
     <main>
-      <GoodsList :goods="filteredGoods" />
-      <!-- Элитные товары:
-      <div class="goods-list">
-        <div
-          v-for="item in filteredGoods"
-          :key="item.id_product"
-          class="goods-item"
-        >
-          <h3>{{ item.product_name }}</h3>
-          <p>{{ item.price }}</p>
-          <button>Добавить</button>
-        </div>
-      </div> -->
+      <GoodsList @add-to-cart="addToCart" :goods="filteredGoods" />
       <br />
-      <Cart :isVisibleCart="isVisibleCart" />
-      <!-- <div v-show="isVisibleCart" class="cart">
-        Корзина:
-        <div class="cart-list"></div>
-      </div> -->
+      <Cart :cartGoods="cartGoods" :isVisibleCart="isVisibleCart" />
     </main>
   </div>
 </template>
@@ -38,9 +13,7 @@
 import GoodsList from "./components/GoodsList";
 import Header from "./components/Header";
 import Cart from "./components/Cart";
-
-const API_URL =
-  "https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses";
+const API_URL = "http://localhost:3000";
 export default {
   components: {
     GoodsList,
@@ -49,20 +22,43 @@ export default {
   },
   data: () => ({
     goods: [],
+    cartGoods: [],
     filteredGoods: [],
     isVisibleCart: false,
   }),
   mounted() {
-    this.makeGETRequest(`${API_URL}/catalogData.json`);
+    this.getGoods();
+    this.getCart();
   },
   methods: {
+    addToCart(item) {
+      console.log(item);
+      this.makePOSTRequest(`${API_URL}/addToCart`, item).then(() =>
+        this.getCart()
+      );
+    },
     makeGETRequest(url) {
-      fetch(url)
-        .then((data) => data.json())
-        .then((data) => {
-          this.goods = data;
-          this.filteredGoods = data;
-        });
+      return fetch(url).then((data) => data.json());
+    },
+    makePOSTRequest(url, data) {
+      return fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }).then((data) => data.json());
+    },
+    getGoods() {
+      this.makeGETRequest(`${API_URL}/catalogData`).then((data) => {
+        this.goods = data;
+        this.filteredGoods = data;
+      });
+    },
+    getCart() {
+      this.makeGETRequest(`${API_URL}/cartData`).then((data) => {
+        this.cartGoods = data;
+      });
     },
     filterGoods(value) {
       const regexp = new RegExp(value, "i");
@@ -74,11 +70,6 @@ export default {
       this.isVisibleCart = !this.isVisibleCart;
     },
   },
-  // watch: {
-  //   searhLine() {
-  //     this.filterGoods();
-  //   },
-  // },
 };
 </script>
 
@@ -118,13 +109,6 @@ main {
   flex-wrap: wrap;
   justify-content: space-around;
 }
-/* .goods-item {
-  width: 200px;
-  height: 300px;
-  padding: 5px;
-  margin: 10px;
-  box-shadow: 0px 0px 8px 2px rgba(34, 60, 80, 0.2);
-} */
 .goods-search,
 .search-button {
   height: 100%;
